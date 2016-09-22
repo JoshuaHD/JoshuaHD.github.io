@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>React - Template</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.1/lodash.min.js"></script>
+    <script src="../../js/react.min.js"></script>
+    <script src="../../js/react-dom.min.js"></script>
+    <script src="../../js/browser.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+</head>
+<body>
+
+<div id="container"></div><div></div>
+
+<script type="text/babel">
+    var Output = React.createClass({
+        getInitialState: function () {
+            let out = this.props.output;
+            return {
+                output: null
+            };
+        },
+        render: function () {
+            return (
+                    <div>
+                        <h1>Output</h1>
+                        <textarea ref="output" name="output" id="" cols="30" rows="10" value={this.props.output}></textarea>
+                    </div>
+            );
+        }
+    });
+    var Input = React.createClass({
+        getInitialState: function () {
+            let inp = this.props.input;
+            return {
+                input: inp
+            };
+        },
+        render: function () {
+            return (
+                    <div>
+                        <h1>Input</h1>
+                        <textarea ref="input" name="input" id="" cols="30" rows="10" defaultValue={this.state.input}></textarea>
+                    </div>
+            );
+        }
+    });
+    var LoopsInput = React.createClass({
+        getInitialState: function () {
+            let inp = this.props.input;
+            return {
+                input: inp, 
+                loopType: null,
+                copies: 1
+            };
+        },
+        setInput: function (output) {
+            this.setState({input: input});
+        },
+        onSelect: function (e) {
+            this.setState({loopType: e.target.value})
+        },
+        renderDetails: function () {
+            switch(this.state.loopType){
+                case "noLoops":
+
+                    break;
+                case "nCopies":
+                    return(
+                            <div>
+                                <label style={this.styles}>Start value <input type="number" ref="loopsCopies" name="copies" min="1" max="999" defaultValue="1"/></label>
+                            </div>
+                    );
+                    break;
+                case "matchList":
+                    return(
+                            <div>
+                                List Values <textarea ref="listValues" name="listValues" cols="30" rows="10"></textarea><br />
+                                Placeholder for List Value <input  ref="listPlaceholder" type="text" name="listPlaceholder"/>
+                            </div>
+                    );
+                    break;
+            }
+            return(null);
+        },
+        render: function () {
+            let style = {marginRight: "30px"};
+            return (
+                <fieldset>
+                <h1>Loops</h1>
+                     <input type="radio" id="noLoops" name="Loops" value="noLoops" onChange={this.onSelect} /><label htmlFor="noLoops" style={style}> no Loops</label>
+                    <label htmlFor="nCopies" style={style}> <input type="radio" id="nCopies" name="Loops" value="nCopies" onChange={this.onSelect} /> Repeat input</label>
+                    <label htmlFor="matchList" style={style}> <input type="radio" id="matchList" name="Loops" value="matchList" onChange={this.onSelect}  /> Create a copy for each line in list</label>
+
+                    {this.renderDetails()}
+                </fieldset>
+            );
+        }
+    });
+    var SearchReplaceInput = React.createClass({
+        getInitialState: function () {
+            let inp = this.props.input;
+            return {
+                input: inp,
+                replaceType: null
+            };
+        },
+        setInput: function (output) {
+            this.setState({input: input});
+        },
+        onSelect: function (e) {
+            this.setState({replaceType: e.target.value})
+        },
+        styles: {marginRight: "30px"},
+        renderDetails: function () {
+            switch(this.state.replaceType){
+                case "replace":
+                    return(
+                            <div>
+                                Replace with <input type="text" ref="searchReplaceString" name="searchReplaceString"/>
+                            </div>
+                    );
+                    break;
+                case "iterate":
+                    return(
+                            <div>
+                                <label style={this.styles}>Start value <input type="number" ref="startValue" name="startValue"/></label>
+                                <label style={this.styles}>Increment value <input type="number" ref="incrementValue" name="incrementValue"/></label>
+                            </div>
+                    );
+                    break;
+            }
+            return(null);
+        },
+        render: function () {
+            return (
+                    <fieldset>
+                        <a href="#" onClick={() => {this.props.remove(this.props.index); return false;}}>X - {this.props.index}</a><h1>Search & Replace</h1>
+                        Search for <input type="text" ref="searchString" name="searchString"/><br />
+                        <label htmlFor="replaceType" style={this.styles}> <input type="radio" id="replaceType" name={"sar" + this.props.index} value="replace" onChange={this.onSelect} />  replace with String</label>
+                        <label htmlFor="replaceType" style={this.styles}> <input type="radio" id="replaceType" name={"sar" + this.props.index} value="iterate" onChange={this.onSelect} />  replace with Incrementing number</label>
+
+                        {this.renderDetails()}
+                    </fieldset>
+            );
+        }
+    });
+    var Looper = React.createClass({
+    /*Show Output*/
+
+    /*Show Input Template Textarea*/
+
+    /*
+     * Show Loops Section
+     *   - No loops, just S&R
+     *   - Number of Copies (intCopies)
+     *   - Copy for every Listvalue (listValues, strPlaceholder)
+     * */
+
+    /*
+     * Show Search & Replace Section
+     *   - Search String
+     *       - Replace String
+     *       - Replace with number (startValue, Increment)
+     * */
+        getInitialState: function () {
+            return {
+                comments: [
+                ],
+                output: "",
+                input: "enter text here",
+                sarCount: 2,
+                sarComponents: []
+            };
+        },
+        makeOutput: function () {
+            let inp = this.refs.input.refs.input.value;
+            let out = [];
+            console.log("make, input ", inp, this.refs.loops.state.loopType);
+            switch (this.refs.loops.state.loopType){
+                case "nCopies":
+                        let copies = this.refs.loops.refs.loopsCopies.value;
+                        console.log("copies", copies);
+                        for(var i = 0; i < copies; i++ ){
+                            out.push(inp);
+                        }
+                    break;
+                case "matchList":
+                        let list = this.refs.loops.refs.listValues.value.split("\n");
+                        let placeholder = this.refs.loops.refs.listPlaceholder.value;
+                        list.map((v, i) => {
+                            console.log(v, i);
+                            out.push(inp.replace(placeholder, v))
+                        });
+                        console.log("list", list);
+                    break;
+                case "noLoops":
+                default:
+                    out.push(inp);
+                    break;
+            }
+            /*
+                Search & Replace happens here for each S&R Component
+             */
+            this.state.sarComponents.map((v, i) => {
+                console.log("sar", v, this.refs[v.ref]);
+                let ref = v.ref;
+                let search = this.refs[ref].refs.searchString.value;
+                let replace = _.get(this.refs, ref + '.refs.searchReplaceString.value', "");
+                let startValue = parseInt(_.get(this.refs, ref + '.refs.startValue.value', 0));
+                let incrementValue = parseInt(_.get(this.refs, ref + '.refs.incrementValue.value', 0));
+                let curValue = startValue;
+                console.log(out);
+                out.map((v, i) => {
+                    console.log("rp", this.refs, v);
+                    switch(this.refs[ref].state.replaceType){
+                        case "replace":
+                            out[i] = v.replace(search, replace);
+                            break;
+                        case "iterate":
+                            out[i] = v.replace(search, curValue);
+                            break;
+                    }
+                    curValue += incrementValue;
+                });
+            });
+            this.setState({output: out.join("\n")});
+        },
+        submit: function () {
+          console.log("clicked", this.refs);
+            //this.setState({output: "new output"});
+            this.makeOutput();
+        },
+        addSar: function () {
+            this.setState({sarCount: this.state.sarCount + 1});
+        },
+        removeSar: function (i) {
+            //FIXME Removes container but doesnt persist data
+                var arr =  this.state.sarComponents;
+                arr.splice(i, 1);
+                this.setState({sarComponents: arr});
+                this.setState({sarCount: this.state.sarCount - 1});
+        },
+        renderSarComponents: function (){
+            for(var i = this.state.sarComponents.length; i < this.state.sarCount; i++){
+                this.state.sarComponents.push(<SearchReplaceInput remove={this.removeSar} index={i} ref={"sar_" + i} />)
+            }
+            return (this.state.sarComponents);
+        },
+        render: function () {
+            return (
+                    <form>
+                        <Output ref="output" output={this.state.output}/>
+                        <Input ref="input" input={this.state.input}/>
+                        <LoopsInput ref="loops"/>
+                        {this.renderSarComponents()}
+                        <button type="button" id="sar" onClick={this.addSar}>Add Search & Replace</button>
+
+                        <button type="button" id="submit" onClick={this.submit}>Submit</button>
+                    </form>
+            );
+        }
+    });
+
+    ReactDOM.render(
+            <Looper />,
+            document.getElementById('container')
+    );
+</script>
+
+</body>
+</html>
